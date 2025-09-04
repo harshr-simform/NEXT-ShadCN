@@ -1,26 +1,153 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 
+  Theme variables are now managed by theming.ts
+  These CSS variables will be dynamically set by the theme system
+  Default values provided for SSR and initial load
+*/
+
+:root {
+  /* Base radius - managed by theming.ts */
+  --radius: 0.5rem;
+
+  /* Light theme defaults - will be overridden by theming.ts */
+  --background: #f5f5f5;
+  --foreground: #202020;
+  --card: #ffffff;
+  --card-foreground: #202020;
+  --popover: #ffffff;
+  --popover-foreground: #202020;
+  --primary: #3f756c;
+  --primary-foreground: #f6eecd;
+  --secondary: #e1c789;
+  --secondary-foreground: #c6743e;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: #dbe8e6;
+  --accent-foreground: #088570;
+  --destructive: #db0a0a;
+  --destructive-foreground: #f6eecd;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #088570;
+  --chart-1: #20467e;
+  --chart-2: #00bc7d;
+  --chart-3: #ffd000;
+  --chart-4: #ad46ff;
+  --chart-5: #180e10;
+  --red: #db0a0a;
+  --green: #06be25;
+  --yellow: #ffd000;
+  --lightblue: #00c3ff;
+  --purple: #de49c5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #202020;
+  --sidebar-primary: #3f756c;
+  --sidebar-primary-foreground: #f6eecd;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #202020;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #088570;
+}
+
+.dark {
+  /* Dark theme defaults - will be overridden by theming.ts */
+  --background: #202020;
+  --foreground: #ffffff;
+  --card: #101010;
+  --card-foreground: #ffffff;
+  --popover: #101010;
+  --popover-foreground: #ffffff;
+  --primary: #3f756c;
+  --primary-foreground: #f6eecd;
+  --secondary: #e1c789;
+  --secondary-foreground: #c6743e;
+  --muted: #404040;
+  --muted-foreground: #a3a3a3;
+  --accent: #404040;
+  --accent-foreground: #ffffff;
+  --destructive: #db0a0a;
+  --destructive-foreground: #ffffff;
+  --border: #262626;
+  --input: #404040;
+  --ring: #088570;
+  --chart-1: #20467e;
+  --chart-2: #00bc7d;
+  --chart-3: #ffd000;
+  --chart-4: #ad46ff;
+  --chart-5: #180e10;
+  --red: #db0a0a;
+  --green: #06be25;
+  --yellow: #ffd000;
+  --lightblue: #00c3ff;
+  --purple: #de49c5;
+  --sidebar: #101010;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #3f756c;
+  --sidebar-primary-foreground: #f6eecd;
+  --sidebar-accent: #404040;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #262626;
+  --sidebar-ring: #088570;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
+  body {
+    @apply bg-background text-foreground;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Prevent theme transition flicker */
+  html {
+    transition: none !important;
+  }
+
+  html.theme-transitioning * {
+    transition: none !important;
+  }
 }
