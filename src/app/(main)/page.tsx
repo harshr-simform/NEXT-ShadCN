@@ -139,23 +139,23 @@ const page = () => {
           <CardContent className="space-y-4">
             <ul className="text-sm space-y-2">
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
                 Collapsible sidebar toggle
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
                 Search functionality
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
                 Notifications with badge
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
                 Theme switcher (Light/Dark/System)
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
                 User menu dropdown
               </li>
             </ul>

@@ -11,29 +11,57 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  colorPalettes,
-  applyColorPalette,
-  getCurrentPalette,
-  saveColorPalette,
-} from "@/lib/theming";
+
+const colorPalettes = [
+  {
+    name: "Default",
+    value: "default",
+  },
+  {
+    name: "Blue Ocean",
+    value: "blue",
+  },
+  {
+    name: "Purple Sage",
+    value: "purple",
+  },
+  {
+    name: "Rose Gold",
+    value: "rose",
+  },
+];
 
 export function ColorPaletteSwitcher() {
   const [activePalette, setActivePalette] = React.useState("default");
 
   React.useEffect(() => {
-    // Load saved palette from localStorage for UI state only
-    const savedPalette = getCurrentPalette();
-    if (savedPalette && colorPalettes.find((p) => p.value === savedPalette)) {
+    // Load saved palette from localStorage
+    const savedPalette = localStorage.getItem("color-palette") || "default";
+    if (colorPalettes.find((p) => p.value === savedPalette)) {
       setActivePalette(savedPalette);
+      // Apply theme class
+      document.documentElement.className = document.documentElement.className
+        .replace(/theme-\w+/g, "")
+        .trim();
+      if (savedPalette !== "default") {
+        document.documentElement.classList.add(`theme-${savedPalette}`);
+      }
     }
   }, []);
 
   const handlePaletteChange = (paletteValue: string) => {
-    const isDark = document.documentElement.classList.contains("dark");
-    applyColorPalette(paletteValue, isDark);
-    saveColorPalette(paletteValue);
     setActivePalette(paletteValue);
+    localStorage.setItem("color-palette", paletteValue);
+
+    // Remove existing theme classes
+    document.documentElement.className = document.documentElement.className
+      .replace(/theme-\w+/g, "")
+      .trim();
+
+    // Add new theme class (except for default)
+    if (paletteValue !== "default") {
+      document.documentElement.classList.add(`theme-${paletteValue}`);
+    }
   };
 
   return (
@@ -55,14 +83,8 @@ export function ColorPaletteSwitcher() {
           >
             <div className="flex items-center gap-3">
               <div className="flex gap-1">
-                <div
-                  className="w-3 h-3 rounded-full border border-border"
-                  style={{ backgroundColor: palette.colors.light.primary }}
-                />
-                <div
-                  className="w-3 h-3 rounded-full border border-border"
-                  style={{ backgroundColor: palette.colors.light.secondary }}
-                />
+                <div className="w-3 h-3 rounded-full border border-border bg-primary" />
+                <div className="w-3 h-3 rounded-full border border-border bg-secondary" />
               </div>
               <span>{palette.name}</span>
             </div>

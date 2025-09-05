@@ -19,14 +19,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
 interface HeaderProps {
-  title?: string;
   breadcrumb?: string;
 }
 
-export function Header({
-  title = "Dashboard",
-  breadcrumb = "Dashboard / Components",
-}: HeaderProps) {
+export function Header({ breadcrumb = "Dashboard / Components" }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear border-b bg-background/80 backdrop-blur-sm">
       <div className="flex items-center gap-2 px-4 flex-1">
@@ -46,7 +42,7 @@ export function Header({
         {/* Notifications */}
         <Button variant="ghost" size="icon-default" className="relative">
           <Bell className="h-4 w-4" />
-          <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] text-destructive-foreground flex items-center justify-center">
             3
           </span>
           <span className="sr-only">Notifications</span>

@@ -2,56 +2,88 @@
 
 ## Architecture Overview
 
-This is a Next.js 15 component library built with ShadCN UI featuring a **dual theming system** - the key architectural pattern that differentiates this project. Two independent theme controls operate simultaneously:
+This is a Next.js 15 component library built with ShadCN UI featuring a **streamlined CSS-only theming system**. The architecture uses pure CSS custom properties for theming with no complex TypeScript abstractions.
+
+### Key Features:
 
 1. **Theme Mode**: Light/Dark switching via `next-themes`
-2. **Color Palette**: 4 custom color schemes (Default, Blue Ocean, Purple Sage, Rose Gold)
+2. **Color Palette**: Multiple custom color schemes managed via CSS variables
+3. **CSS-Only Architecture**: Simple, performant theming without TypeScript complexity
 
 ## Core Theming System Pattern
 
-### Theme Application Flow (Critical Understanding)
+### Theme Application Flow (Simplified Architecture)
 
 ```
-SSR → theme-script.ts (inline) → theme-provider.tsx (hydration) → theming.ts (utilities)
+CSS Variables → @theme directive → Tailwind classes → Components
 ```
 
-**Anti-FOUC Architecture**: The `src/lib/theme-script.ts` contains an inline script injected into `<head>` that applies themes **before React hydration** to prevent flash of unstyled content during navigation.
+**Performance-First Design**: Direct CSS variable application without JavaScript overhead, ensuring optimal performance and no flash of unstyled content.
 
 ### Key Files & Responsibilities
 
-- **`src/lib/theming.ts`**: Core theme engine with TypeScript interfaces, color palettes, and application utilities
-- **`src/lib/theme-script.ts`**: Inline script duplicating theme logic for SSR (must stay in sync with theming.ts)
-- **`src/components/theme-provider.tsx`**: React context wrapper managing post-hydration theme changes
-- **`src/app/globals.css`**: CSS variables (managed by TS, not manually edited)
+- **`src/app/globals.css`**: Complete theming system with CSS variables and @theme directive
+- **`src/lib/theme-script.ts`**: Lightweight SSR theme application script
+- **`src/components/theme-provider.tsx`**: React context wrapper for theme switching
+- **`src/components/color-palette-switcher.tsx`**: Color palette switching component
 
 ## Development Patterns
 
-### Adding New Color Palettes
+### **CRITICAL: Variable Usage Rule**
 
-Follow the **5-step pattern** when adding color schemes:
+**🚫 DO NOT USE STATIC COLORS**
 
-1. Update `colorPalettes` array in `theming.ts` with full interface compliance
-2. Mirror the palette in `theme-script.ts` colorPalettes object
-3. Update `applyColorPalette` function if new color properties added
-4. Test both SSR and client-side rendering
-5. Optional: Add preview in `/components` showcase page
+```tsx
+// ❌ NEVER use static colors
+className="bg-[#2D6A5C] text-white"
+style={{ backgroundColor: "#2D6A5C" }}
+```
 
-### Component Development
+**✅ ALWAYS USE CSS VARIABLES FROM globals.css**
+
+```tsx
+// ✅ Correct: Use CSS variables
+className="bg-primary text-primary-foreground"
+style={{ backgroundColor: "var(--primary)" }}
+```
+
+### Available CSS Variables
+
+All colors are defined in `src/app/globals.css` and available as:
+
+- `--primary`, `--primary-foreground`
+- `--secondary`, `--secondary-foreground`
+- `--accent`, `--accent-foreground`
+- `--muted`, `--muted-foreground`
+- `--destructive`, `--destructive-foreground`
+- `--background`, `--foreground`
+- `--card`, `--card-foreground`
+- `--popover`, `--popover-foreground`
+- `--border`, `--input`, `--ring`
+- `--chart-1` through `--chart-5`
+
+### Component Development Guidelines
 
 - Use `@/` path aliases configured in `components.json`
 - Components follow ShadCN "new-york" style with `data-slot` attributes
-- Theme-aware components use `var(--color-name)` CSS variables, not `hsl()` wrappers
+- **ONLY use CSS variables**: `var(--variable-name)` or Tailwind classes like `bg-primary`
 - Utilize `cn()` utility from `@/lib/utils` for conditional classes
+- Test in both light and dark modes
 
 ### Theme Integration Patterns
 
 ```tsx
-// Preferred: CSS variables
-style={{ backgroundColor: "var(--primary)" }}
+// ✅ Preferred: Tailwind classes with CSS variables
+<Button className="bg-primary text-primary-foreground hover:bg-primary/90" />
 
-// Hook-based (advanced)
-const theme = useTheme();
-const color = theme.getColor("primary");
+// ✅ Alternative: Direct CSS variables
+<div style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }} />
+
+// ✅ Conditional theming
+<div className={cn(
+  "bg-background text-foreground",
+  isActive && "bg-accent text-accent-foreground"
+)} />
 ```
 
 ## Development Workflow
@@ -65,50 +97,63 @@ npm run dev  # Starts Next.js dev server on :3000
 ### Component Testing
 
 - Navigate to `/components` for theme-aware component showcase
-- Navigate to `/forms` for form element demonstrations
 - Use browser dev tools to verify CSS variable application
+- Test all color palettes and light/dark modes
+- Ensure no static colors are used in components
+
+### Adding New Color Palettes
+
+To add new color schemes:
+
+1. **Update `src/lib/theme-script.ts`**: Add new palette to `colorPalettes` object
+2. **Update `src/components/color-palette-switcher.tsx`**: Add new option with preview colors
+3. **Test thoroughly**: Verify both light and dark variants work correctly
+4. **No globals.css changes needed**: Variables are applied dynamically
 
 ### Debugging Theme Issues
 
 1. Check browser localStorage for `theme` and `color-palette` keys
-2. Verify CSS variables in dev tools Elements tab
-3. Ensure `theme-script.ts` and `theming.ts` palette definitions match
-4. Test page navigation to confirm no FOUC
+2. Verify CSS variables in dev tools Elements tab (should show current values)
+3. Ensure no static colors are hardcoded in components
+4. Test theme switching and palette changes
 
 ## Project-Specific Conventions
 
 ### File Organization
 
-- **Route Groups**: `(main)` contains authenticated/main app routes
+- **Route Groups**: `(main)` contains main application routes
 - **UI Components**: `src/components/ui/` for base ShadCN components
 - **Feature Components**: `src/components/` for app-specific components
-- **Hooks**: `src/hooks/` for theme and utility hooks
+- **Theme System**: `src/lib/theme-script.ts` and `src/app/globals.css`
 
-### TypeScript Patterns
+### CSS Variable Usage Standards
 
-- All theme interfaces in `theming.ts` are strictly typed
-- Color palette interface requires both light/dark variants with full color spectrum
-- Hook `useTheme()` provides type-safe theme utilities and CSS-in-JS helpers
+- **Colors**: Always use semantic names (`primary`, `secondary`, etc.)
+- **Foreground Pairing**: Each color has a foreground variant (`primary-foreground`)
+- **Chart Colors**: Numbered variants (`chart-1` through `chart-5`)
+- **Spacing**: Use `--radius` for border radius consistency
 
-### CSS Variable Naming
+### Component Development Rules
 
-- Follow `--kebab-case` naming (auto-generated from camelCase TypeScript)
-- Foreground colors always paired: `--primary` + `--primary-foreground`
-- Chart colors numbered: `--chart-1` through `--chart-5`
+1. **No Static Colors**: Never use hex codes, RGB values, or hardcoded colors
+2. **CSS Variables Only**: Use `var(--variable-name)` or Tailwind classes
+3. **Theme Testing**: Always test in both light and dark modes
+4. **Palette Testing**: Verify component works with all color palettes
 
 ## Critical Integration Points
 
 ### Theme Persistence
 
-- localStorage keys: `theme` (light/dark/system) and `color-palette` (palette value)
-- `getCurrentPalette()` and `saveColorPalette()` handle persistence
-- Theme state managed by next-themes, palette state custom-managed
+- localStorage keys: `theme` (light/dark/system) and `color-palette` (palette name)
+- Theme switching handled by `next-themes` package
+- Color palette switching managed by custom logic in `theme-script.ts`
 
-### SSR Compatibility
+### CSS Variable Architecture
 
-- `theme-script.ts` must execute synchronously in `<head>`
-- Never modify theme on server-side - client-only operations
-- `suppressHydrationWarning` required on `<html>` tag
+- **Source**: All variables defined in `globals.css`
+- **Application**: Applied via `@theme` directive for Tailwind integration
+- **Dynamic Updates**: JavaScript updates CSS custom properties on palette change
+- **SSR Safe**: Default values provided for server-side rendering
 
 ### External Dependencies
 
@@ -117,9 +162,39 @@ npm run dev  # Starts Next.js dev server on :3000
 - **Lucide React**: Icon system
 - **Tailwind CSS**: Utility classes with CSS variables integration
 
-## Common Gotchas
+## Common Guidelines & Best Practices
 
-1. **Palette Sync**: When updating color palettes, both `theming.ts` and `theme-script.ts` must be updated
-2. **CSS Variable Format**: Use `var(--color)` not `hsl(var(--color))` - variables store hex values
-3. **Hydration Timing**: Theme changes only work post-hydration; inline script handles pre-hydration
-4. **Component Slots**: ShadCN components use `data-slot` attributes - preserve when customizing
+### Color Usage Rules
+
+1. **Static Colors Forbidden**: Never use `#hex`, `rgb()`, or `hsl()` values directly
+2. **CSS Variables Required**: Always use `var(--variable-name)` or Tailwind classes
+3. **Semantic Naming**: Use `primary`, `secondary`, `accent` instead of color names
+4. **Testing**: Verify appearance in all themes and color palettes
+
+### Component Enhancement Patterns
+
+```tsx
+// ✅ Correct approach
+const Button = ({ variant = "primary" }) => (
+  <button
+    className={cn(
+      "bg-primary text-primary-foreground hover:bg-primary/90",
+      variant === "secondary" && "bg-secondary text-secondary-foreground"
+    )}
+  >
+    Button
+  </button>
+);
+
+// ❌ Incorrect approach
+const Button = () => (
+  <button style={{ backgroundColor: "#2D6A5C", color: "white" }}>Button</button>
+);
+```
+
+### Performance Considerations
+
+- CSS-only theming ensures optimal performance
+- No JavaScript theme calculations during render
+- Minimal bundle size impact
+- Fast theme switching with pure CSS transitions
